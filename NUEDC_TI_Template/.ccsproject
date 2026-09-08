@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?ccsproject version="1.0"?>
+<projectOptions>
+	<ccsVariant value="50:Theia-based"/>
+	<ccsVersion value="70.4.0"/>
+	<deviceFamily value="C2000"/>
+	<executableActions value=""/>
+	<createSlaveProjects value=""/>
+	<templateProperties value="id=empty_driverlib_project.projectspec.F280049C_Template"/>
+	<origin value="C:\TI\C2000Ware_26_00_00_00\driverlib\f28004x\examples\empty_projects\CCS\empty_driverlib_project.projectspec"/>
+	<filesToOpen value=""/>
+	<convertedVirtualResources value="driverlib.lib::(type=1;location=COM_TI_C2000WARE_INSTALL_DIR/driverlib/f28004x/driverlib/ccs/Debug/driverlib.lib;)"/>
+</projectOptions>

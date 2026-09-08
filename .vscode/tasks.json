@@ -1,0 +1,127 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CCS: Import project",
+            "type": "shell",
+            "command": "${config:ccs.CCS_INSTALL_ROOT}\\eclipse\\ccs-server-cli.bat",
+            "args": [
+                "-workspace",
+                "${workspaceFolder}",
+                "-application",
+                "projectImport",
+                "-ccs.location",
+                "${config:ccs.CCS_PROJECT_DIR}",
+                "-ccs.overwrite",
+                "true"
+            ],
+            "options": {
+                "env": {
+                    "COM_TI_C2000WARE_INSTALL_DIR": "${config:ccs.COM_TI_C2000WARE_INSTALL_DIR}"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "CCS: Build CPU1_FLASH",
+            "type": "shell",
+            "command": "${config:ccs.CCS_INSTALL_ROOT}\\eclipse\\ccs-server-cli.bat",
+            "args": [
+                "-workspace",
+                "${workspaceFolder}",
+                "-application",
+                "projectBuild",
+                "-ccs.projects",
+                "${config:ccs.CCS_PROJECT_NAME}",
+                "-ccs.configuration",
+                "CPU1_FLASH",
+                "-ccs.buildType",
+                "full",
+                "-ccs.autoImport",
+                "-ccs.autoOpen",
+                "-ccs.listProblems"
+            ],
+            "options": {
+                "env": {
+                    "COM_TI_C2000WARE_INSTALL_DIR": "${config:ccs.COM_TI_C2000WARE_INSTALL_DIR}"
+                }
+            },
+            "problemMatcher": "$gcc",
+            "dependsOn": "CCS: Import project"
+        },
+        {
+            "label": "CCS: Build CPU1_RAM",
+            "type": "shell",
+            "command": "${config:ccs.CCS_INSTALL_ROOT}\\eclipse\\ccs-server-cli.bat",
+            "args": [
+                "-workspace",
+                "${workspaceFolder}",
+                "-application",
+                "projectBuild",
+                "-ccs.projects",
+                "${config:ccs.CCS_PROJECT_NAME}",
+                "-ccs.configuration",
+                "CPU1_RAM",
+                "-ccs.buildType",
+                "full",
+                "-ccs.autoImport",
+                "-ccs.autoOpen",
+                "-ccs.listProblems"
+            ],
+            "options": {
+                "env": {
+                    "COM_TI_C2000WARE_INSTALL_DIR": "${config:ccs.COM_TI_C2000WARE_INSTALL_DIR}"
+                }
+            },
+            "problemMatcher": "$gcc",
+            "dependsOn": "CCS: Import project"
+        },
+        {
+            "label": "CCS: Clean CPU1_FLASH",
+            "type": "shell",
+            "command": "${config:ccs.CCS_INSTALL_ROOT}\\eclipse\\ccs-server-cli.bat",
+            "args": [
+                "-workspace",
+                "${workspaceFolder}",
+                "-application",
+                "projectBuild",
+                "-ccs.projects",
+                "${config:ccs.CCS_PROJECT_NAME}",
+                "-ccs.configuration",
+                "CPU1_FLASH",
+                "-ccs.buildType",
+                "clean",
+                "-ccs.autoImport",
+                "-ccs.autoOpen",
+                "-ccs.listProblems"
+            ],
+            "options": {
+                "env": {
+                    "COM_TI_C2000WARE_INSTALL_DIR": "${config:ccs.COM_TI_C2000WARE_INSTALL_DIR}"
+                }
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "CCS Make: CPU1_FLASH",
+            "type": "shell",
+            "command": "${config:ccs.CCS_INSTALL_ROOT}\\utils\\bin\\gmake.exe",
+            "args": [
+                "-k",
+                "all"
+            ],
+            "options": {
+                "cwd": "${config:ccs.CCS_PROJECT_DIR}\\CPU1_FLASH",
+                "env": {
+                    "COM_TI_C2000WARE_INSTALL_DIR": "${config:ccs.COM_TI_C2000WARE_INSTALL_DIR}",
+                    "C2000_CGT_INSTALLDIR": "${config:ccs.CG_TOOL_ROOT}"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc"
+        }
+    ]
+}

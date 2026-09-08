@@ -1,0 +1,81 @@
+{
+    "configurations": [
+        {
+            "name": "C2000 F280049C",
+            "includePath": [
+                "${config:ccs.CCS_PROJECT_DIR}",
+                "${config:ccs.CCS_PROJECT_DIR}/device",
+                "${config:ccs.CCS_PROJECT_DIR}/device/driverlib",
+                "${config:ccs.CCS_PROJECT_DIR}/device/driverlib/inc",
+                "${config:ccs.CCS_PROJECT_DIR}/mycode",
+                "${config:ccs.CCS_PROJECT_DIR}/mycode/SPLL",
+                "${config:ccs.CCS_PROJECT_DIR}/CPU1_FLASH/syscfg",
+                "${config:ccs.CCS_PROJECT_DIR}/CPU1_RAM/syscfg",
+                "${config:ccs.CG_TOOL_ROOT}/include",
+                "${config:ccs.C2000WARE_ROOT}",
+                "${config:ccs.C2000WARE_DLIB_ROOT}",
+                "${config:ccs.C2000WARE_DLIB_ROOT}/inc",
+                "${config:ccs.C2000WARE_ROOT}/device_support/f28004x/common/include",
+                "${config:ccs.C2000WARE_ROOT}/device_support/f28004x/headers/include",
+                "${config:ccs.C2000WARE_ROOT}/libraries/control/DCL/c28/include",
+                "${config:ccs.C2000WARE_ROOT}/libraries/math/FPUfastRTS/c28/include"
+            ],
+            "forcedInclude": [
+                "${config:ccs.CCS_PROJECT_DIR}/CPU1_FLASH/syscfg/c2000ware_libraries.h"
+            ],
+            "defines": [
+                "CPU1",
+                "_FLASH",
+                "LARGE_MODEL",
+                "F28004x=1",
+                "__TMS320C28XX__",
+                "__TMS320C2000__",
+                "__TMS320C28XX_FPU32__",
+                "__TI_COMPILER_VERSION__=22060300",
+                "__TI_EABI__=1",
+                "__PTRDIFF_T_TYPE__=__PTRDIFF_TYPE__",
+                "__SIZE_T_TYPE__=__SIZE_TYPE__",
+                "__WCHAR_T_TYPE__=__WCHAR_TYPE__",
+                "_SIZE_T_DECLARED",
+                "_WCHAR_T_DECLARED",
+                "size_t=__SIZE_TYPE__",
+                "wchar_t=__WCHAR_TYPE__",
+                "__interrupt=",
+                "__cregister=",
+                "__enable_interrupts()=0",
+                "__disable_interrupts()=0",
+                "__meallow()=",
+                "__meaud()=",
+                "__byte(x,y)=(*((volatile unsigned char *)(x) + (y)))",
+                "__byte_peripheral_32(x)=(*((volatile uint32_t *)(x)))",
+                "__fsat(x,max,min)=(((x) > (max)) ? (max) : (((x) < (min)) ? (min) : (x)))",
+                "__fmax(x,y)=(((x) > (y)) ? (x) : (y))",
+                "__fmin(x,y)=(((x) < (y)) ? (x) : (y))",
+                "__sin(x)=sinf(x)",
+                "__cos(x)=cosf(x)",
+                "asm(x)=",
+                "__attribute__(x)="
+            ],
+            "compilerPath": "${config:ccs.CG_TOOL_ROOT}/bin/cl2000.exe",
+            "cStandard": "c99",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "gcc-x86",
+            "browse": {
+                "path": [
+                    "${config:ccs.CCS_PROJECT_DIR}",
+                    "${config:ccs.CCS_PROJECT_DIR}/device",
+                    "${config:ccs.CCS_PROJECT_DIR}/mycode",
+                    "${config:ccs.CCS_PROJECT_DIR}/mycode/SPLL",
+                    "${config:ccs.CCS_PROJECT_DIR}/CPU1_FLASH/syscfg",
+                    "${config:ccs.CCS_PROJECT_DIR}/CPU1_RAM/syscfg",
+                    "${config:ccs.CG_TOOL_ROOT}/include",
+                    "${config:ccs.C2000WARE_DLIB_ROOT}",
+                    "${config:ccs.C2000WARE_ROOT}/libraries/control/DCL/c28/include",
+                    "${config:ccs.C2000WARE_ROOT}/libraries/math/FPUfastRTS/c28/include"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }
+    ],
+    "version": 4
+}

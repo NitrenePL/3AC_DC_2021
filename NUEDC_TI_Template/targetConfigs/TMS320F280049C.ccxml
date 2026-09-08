@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configurations XML_version="1.2" id="configurations_0">
+    <configuration XML_version="1.2" id="configuration_0">
+        <instance id="Texas Instruments XDS110 USB Debug Probe" XML_version="1.2" xmlpath="connections" xml="TIXDS110_Connection.xml" href="connections/TIXDS110_Connection.xml" desc="Texas Instruments XDS110 USB Debug Probe"/>
+        <connection XML_version="1.2" id="Texas Instruments XDS110 USB Debug Probe">
+            <instance id="drivers" XML_version="1.2" xmlpath="drivers" xml="tixds510icepick_c.xml" href="drivers/tixds510icepick_c.xml"/>
+            <instance id="drivers" XML_version="1.2" xmlpath="drivers" xml="tixds510c28x.xml" href="drivers/tixds510c28x.xml"/>
+            <instance id="drivers" XML_version="1.2" xmlpath="drivers" xml="tixds510cla2.xml" href="drivers/tixds510cla2.xml"/>
+            <instance id="drivers" XML_version="1.2" xmlpath="drivers" xml="tixds510cs_child.xml" href="drivers/tixds510cs_child.xml"/>
+            <property id="SWD Mode Settings" Value="4" Type="choicelist">
+                <choice value="enable" Name="cJTAG (1149.7) 2-pin advanced modes">
+                    <property id="XDS110 Aux Port" Value="1" Type="choicelist"/>
+                </choice>
+            </property>
+            <platform XML_version="1.2" id="platform_0">
+                <instance id="TMS320F280049C" XML_version="1.2" xmlpath="devices" xml="f280049c.xml" href="devices/f280049c.xml" desc="TMS320F280049C"/>
+            </platform>
+        </connection>
+    </configuration>
+</configurations>

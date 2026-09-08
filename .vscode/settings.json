@@ -1,0 +1,22 @@
+{
+    "ccs.CCS_INSTALL_ROOT": "D:\\CCS\\ccs20\\ccs",
+    "ccs.CCS_PROJECT_NAME": "F280049C_Template",
+    "ccs.CCS_PROJECT_DIR": "D:\\CCS20_F280049C_Template\\NUEDC_TI_Template\\NUEDC_TI_Template",
+    "ccs.CG_TOOL_ROOT": "D:\\CCS\\ccs20\\ccs\\tools\\compiler\\ti-cgt-c2000_22.6.3.LTS",
+    "ccs.COM_TI_C2000WARE_INSTALL_DIR": "C:\\TI\\C2000Ware_26_01_00_00",
+    "ccs.C2000WARE_ROOT": "C:\\TI\\C2000Ware_26_01_00_00",
+    "ccs.C2000WARE_DLIB_ROOT": "C:\\TI\\C2000Ware_26_01_00_00\\driverlib\\f28004x\\driverlib",
+    "ccs.SYSCONFIG_TOOL_ROOT": "D:\\CCS\\ccs20\\ccs\\utils\\sysconfig_1.27.0",
+    "ccs.BuildConfiguration": "CPU1_FLASH",
+    "ti.ccs.installPath": "${config:ccs.CCS_INSTALL_ROOT}",
+    "ti.c2000ware.installPath": "${config:ccs.COM_TI_C2000WARE_INSTALL_DIR}",
+    "ti.c2000.compilerPath": "${config:ccs.CG_TOOL_ROOT}",
+    "ti.sysconfig.path": "${config:ccs.SYSCONFIG_TOOL_ROOT}",
+    "C_Cpp.default.compilerPath": "${config:ccs.CG_TOOL_ROOT}\\bin\\cl2000.exe",
+    "C_Cpp.default.intelliSenseMode": "gcc-x86",
+    "files.associations": {
+        "*.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "enabled",
+    "C_Cpp.intelliSenseEngine": "default"
+}
