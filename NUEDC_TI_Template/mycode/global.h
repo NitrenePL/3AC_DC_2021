@@ -35,13 +35,11 @@ extern "C"
     extern float32_t Ua_pu;
     extern float32_t Ub_pu;
     extern float32_t Uc_pu;
-    extern float32_t error;
-    extern float32_t output;
     extern float32_t M;  //调制比
     extern float32_t Ud, Uq;
     extern float32_t Id, Iq;
     extern float32_t I_SET;
-    extern float32_t PIR_OUT;
+    extern float32_t Udc;
     
     
 #ifdef __cplusplus

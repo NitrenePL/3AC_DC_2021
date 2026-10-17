@@ -23,6 +23,7 @@ float32_t Id, Iq;
 float32_t Ualpha, Ubeta;
 float32_t Ialpha, Ibeta;
 float32_t I_SET;
+float32_t Udc;
 #pragma SET_DATA_SECTION()
 
 #pragma SET_DATA_SECTION("logVariables")
@@ -67,15 +68,20 @@ __interrupt void INT_myCPUTIMER0_ISR(void)
 // ADC_INT 中断服务函数 主控中断 20kHz
 RAMFUNC __interrupt void ADC_SamplingISR(void)
 {
+
     static int i;
     if (MODE == 1 )
     {
         /*
-        2021年B题 三相AC-DC变换电路
-        在整流之前，需要先离网逆变对测量模块进行拟合。
-        测试开环逆变，先产生相位参考theta_ref，使用SVPWM调制产生三相正弦。
-        并通过改变调制比M改变输出电压测试逆变功能
+        直流电压测量拟合,不断改变输入直流电源电压即可
+        滑动滤波加强拟合效果，闭环时可去掉
         */
+        float32_t temp = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER0);
+        static float32_t filter,last_filter;
+        filter = 0.99f*filter + 0.01f*temp;
+        last_filter = filter;
+        Udc = filter;
+        
         theta_ref += CONST_2PI_32 * 0.0025f;
         if (theta_ref >= 2.0f * CONST_2PI_32)
         {
