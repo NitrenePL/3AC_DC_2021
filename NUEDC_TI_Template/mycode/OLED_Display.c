@@ -101,13 +101,13 @@ static void OLED_Display_UpdatePage0(void)
 // 第 2 页：控制器与调试变量，后续调试量可优先添加在这里
 static void OLED_Display_UpdatePage1(void)
 {
-    OLED_Display_FormatFixed2(oledLine[1], "xx", 0);
+    OLED_Display_FormatFixed2(oledLine[1], "Ia_inst", Ia_inst);
     OLED_Display_UpdateLine(1U, oledLine[1]);
 
-    OLED_Display_FormatFixed2(oledLine[2], "xx", 0);
+    OLED_Display_FormatFixed2(oledLine[2], "Ib_inst", Ib_inst);
     OLED_Display_UpdateLine(2U, oledLine[2]);
 
-    OLED_Display_FormatFixed2(oledLine[3], "xx", 0);
+    OLED_Display_FormatFixed2(oledLine[3], "Ic_inst", Ic_inst);
     OLED_Display_UpdateLine(3U, oledLine[3]);
 
     OLED_Display_FormatFixed2(oledLine[4], "xx", 0);

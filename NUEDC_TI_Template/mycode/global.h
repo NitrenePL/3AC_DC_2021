@@ -40,6 +40,7 @@ extern "C"
     extern float32_t Id, Iq;
     extern float32_t I_SET;
     extern float32_t Udc;
+    extern float32_t Ia_inst,Ib_inst,Ic_inst;
     
     
 #ifdef __cplusplus

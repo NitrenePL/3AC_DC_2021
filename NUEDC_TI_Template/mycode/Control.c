@@ -25,6 +25,7 @@ float32_t Ialpha, Ibeta;
 float32_t I_SET;
 float32_t Udc;
 float32_t Ua_inst,Ub_inst,Uc_inst;
+float32_t Ia_inst,Ib_inst,Ic_inst;
 #pragma SET_DATA_SECTION()
 
 #pragma SET_DATA_SECTION("logVariables")
@@ -71,14 +72,14 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
 {
     static int i;
     /*
-    关于电压测量的方向确认，由于测量是差分测量，如果能确定到底是哪个是H，哪个是L，那么直接相减便是了。
-    但是如果存在不确定，或者为了检查是否有接线错误。
-    可以按以下方式核验，离网逆变的相角是自己赋予的（其为A相相角theta_ref），然后单片机对Uab，Ubc采样后转化为Ua，Ub，Uc
-    此时我们对Ua利用代码中的相角进行dq变换（不是锁相得到的相角）。
-    此时如果Ud等于A相电压峰值(正数)，Uq约等于0，便可以认为接线与代码中输出处理正确。
-    如果任意一相都有问题导致测量相位反了，都不是上述现象。
-    如果两相都反了，则Ud等于A相电压峰值(负数)，Uq约等于0
-    可以选择软件或者硬件上选一处反一下相位。
+    这里准备拟合三相线电流测量，三相需要分别拟合，思路与拟合电压类似，同样借助dq变换。
+    首先如果需要拟合a相，那么我们就要锁A相电流的相位，然后让A相电流用这个相角去变换。
+    变换出的Id对应电流的峰值，Iq应该为0.
+    b相与c相同理，拟合b相就锁b相电压
+    这里选择节省ADC引脚，3个电流测量不采用差分的形式，分别只取测量模块的OUT_+
+    A相电流接A1,B相接A2,C相接A3。
+
+    由于是差分测量当单端测量使用，那么需要先确认测量偏置，不带载将Ia_inst三个变量打印到屏幕即为偏置值,将其校准为0左右即可。
     */
     float32_t temp = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER0);
     Udc = 0.017101307f*temp - 0.192351315f;
@@ -90,7 +91,10 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
     inst_L = (float32_t)ADC_readResult(ADCBRESULT_BASE, ADC_SOC_NUMBER3);
     Ubc_inst = 0.01621422f*(inst_H - inst_L) + 0.03109598f;
     Uca_inst = 0.f - Uab_inst - Ubc_inst;
-    //核验正确，因此不需要改
+
+    Ia_inst = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER1) - 2055.f;
+    Ib_inst = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER2) - 2047.f;
+    Ic_inst = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER3) - 2046.f;
 
     Ua_inst = (2.f * Uab_inst + Ubc_inst) / 3.f;
     Ub_inst = (2.f * Ubc_inst + Uca_inst) / 3.f;
