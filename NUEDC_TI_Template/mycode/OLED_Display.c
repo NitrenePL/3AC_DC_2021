@@ -85,10 +85,10 @@ static void OLED_Display_UpdatePage0(void)
     OLED_Display_FormatFixed2(oledLine[2], "Udc", Udc);
     OLED_Display_UpdateLine(2U, oledLine[2]);
 
-    OLED_Display_FormatFixed2(oledLine[3], "xx", 0);
+    OLED_Display_FormatFixed2(oledLine[3], "Ud", Ud);
     OLED_Display_UpdateLine(3U, oledLine[3]);
 
-    OLED_Display_FormatFixed2(oledLine[4], "xx", 0);
+    OLED_Display_FormatFixed2(oledLine[4], "Uq", Uq);
     OLED_Display_UpdateLine(4U, oledLine[4]);
 
     OLED_Display_FormatFixed2(oledLine[5], "xx", 0);
