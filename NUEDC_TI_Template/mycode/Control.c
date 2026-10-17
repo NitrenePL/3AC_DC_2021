@@ -28,7 +28,7 @@ float32_t I_SET;
 #pragma SET_DATA_SECTION("logVariables")
 // 低速RAM变量放在这里, 例如RMS数组、状态数据等
 
-uint16_t PWM_PRD = 0; // 假设默认周期值
+uint16_t PWM_PRD; // 假设默认周期值
 uint8_t Open = 0;     // 默认关闭
 uint8_t MODE = 0;     // 默认模式0
 uint8_t RECT_ENABLE = 0;//开启整流
@@ -70,7 +70,22 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
     static int i;
     if (MODE == 1 )
     {
-
+        /*
+        2021年B题 三相AC-DC变换电路
+        在整流之前，需要先离网逆变对测量模块进行拟合。
+        测试开环逆变，先产生相位参考theta_ref，使用SVPWM调制产生三相正弦。
+        并通过改变调制比M改变输出电压测试逆变功能
+        */
+        theta_ref += CONST_2PI_32 * 0.0025f;
+        if (theta_ref >= 2.0f * CONST_2PI_32)
+        {
+            theta_ref -= 2.0f * CONST_2PI_32;
+        }
+        float32_t Ua_pu = M * __cos(theta_ref);
+        float32_t Ub_pu = M * __cos(theta_ref - CONST_2PI_32 / 3.f);
+        float32_t Uc_pu = M * __cos(theta_ref + CONST_2PI_32 / 3.f);
+        CB_SVPWM_3Ph(Ua_pu, Ub_pu, Uc_pu);
+        EPWM_Start();
     }
     else if (MODE == 2) 
     {
