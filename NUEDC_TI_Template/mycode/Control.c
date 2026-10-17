@@ -24,6 +24,7 @@ float32_t Ualpha, Ubeta;
 float32_t Ialpha, Ibeta;
 float32_t I_SET;
 float32_t Udc;
+float32_t Ua_inst,Ub_inst,Uc_inst;
 #pragma SET_DATA_SECTION()
 
 #pragma SET_DATA_SECTION("logVariables")
@@ -70,27 +71,33 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
 {
     static int i;
     /*
-    这里准备拟合Uab的线电压测量，因此借助锁相环获取Uab的相位。
-    然后将Uab瞬时值作为Uab的alpha轴，并借助数组获取相移90度的值作为beta轴（中断/采样频率为20kHz，工频50Hz，因此数组大小为400）
-    然后进行 alpha/beta 到 d/q 的变换获得Uab对应d轴q轴，由于变换的相位是Uab的相位，因此d轴值应该对应Uab的峰值，q轴值等于0
-    不断修改调制比M，从而修改Uab对应的峰值电压，然后进行线性拟合。
-    Ubc的拟合类似（锁Ubc_inst并更换变换对象即可）
-    Uab的OUT+接B0,OUT-接B1
-    Ubc的OUT+接B2,OUT-接B3
+    关于电压测量的方向确认，由于测量是差分测量，如果能确定到底是哪个是H，哪个是L，那么直接相减便是了。
+    但是如果存在不确定，或者为了检查是否有接线错误。
+    可以按以下方式核验，离网逆变的相角是自己赋予的（其为A相相角theta_ref），然后单片机对Uab，Ubc采样后转化为Ua，Ub，Uc
+    此时我们对Ua利用代码中的相角进行dq变换（不是锁相得到的相角）。
+    此时如果Ud等于A相电压峰值(正数)，Uq约等于0，便可以认为接线与代码中输出处理正确。
+    如果任意一相都有问题导致测量相位反了，都不是上述现象。
+    如果两相都反了，则Ud等于A相电压峰值(负数)，Uq约等于0
+    可以选择软件或者硬件上选一处反一下相位。
     */
     float32_t temp = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER0);
     Udc = 0.017101307f*temp - 0.192351315f;
     float32_t Uab_inst,Ubc_inst,Uca_inst;
     float32_t inst_H = (float32_t)ADC_readResult(ADCBRESULT_BASE, ADC_SOC_NUMBER0);
     float32_t inst_L = (float32_t)ADC_readResult(ADCBRESULT_BASE, ADC_SOC_NUMBER1);
-    Uab_inst = (inst_H - inst_L);
+    Uab_inst = 0.01619203f*(inst_H - inst_L) + 0.00994615f;
     inst_H = (float32_t)ADC_readResult(ADCBRESULT_BASE, ADC_SOC_NUMBER2);
     inst_L = (float32_t)ADC_readResult(ADCBRESULT_BASE, ADC_SOC_NUMBER3);
-    Ubc_inst = (inst_H - inst_L);
+    Ubc_inst = 0.01621422f*(inst_H - inst_L) + 0.03109598f;
     Uca_inst = 0.f - Uab_inst - Ubc_inst;
+    //核验正确，因此不需要改
 
-    PLL_Calc(Uab_inst);
-    Ualpha = Uab_inst;
+    Ua_inst = (2.f * Uab_inst + Ubc_inst) / 3.f;
+    Ub_inst = (2.f * Ubc_inst + Uca_inst) / 3.f;
+    Uc_inst = (2.f * Uca_inst + Uab_inst) / 3.f;
+
+    PLL_Calc(Ua_inst);
+    Ualpha = Ua_inst;
     U_data[i] = Ualpha;
     //获取beta轴
     if (i >= 100)
@@ -102,7 +109,7 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
         Ubeta = U_data[i + 300];
     }
     //变换
-    ab_to_dq(Ualpha, Ubeta, theta, &Ud, &Uq);
+    ab_to_dq(Ualpha, Ubeta, theta_ref, &Ud, &Uq);//注意是theta_ref
     //注意是theta
     static float32_t filter,last_filter;
     filter = 0.01f*Ud + 0.99f*last_filter;
