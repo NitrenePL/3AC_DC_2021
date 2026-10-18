@@ -77,9 +77,15 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
     变换出的Id对应电流的峰值，Iq应该为0.
     b相与c相同理，拟合b相就锁b相电压
     这里选择节省ADC引脚，3个电流测量不采用差分的形式，分别只取测量模块的OUT_+
-    A相电流接A1,B相接A2,C相接A3。
+    A相电流接A2,B相接A3,C相接A4。(修改了一下，A1无低通滤波，不适合用于交流电流单端测量）
+    重新找一下测量偏置，再拟合
 
-    由于是差分测量当单端测量使用，那么需要先确认测量偏置，不带载将Ia_inst三个变量打印到屏幕即为偏置值,将其校准为0左右即可。
+    与电压测量一样，电流测量也需要保证极性。
+    我们是在逆变时候去做的拟合，而整流时电流流向与逆变相反，因此为了保证控制时忽略电流值正负的影响
+    因此我们定义整流电流流向为正（即为功率流向），那么逆变时电流流向为负。
+    因此我们需要核对当对a相电压锁相时，用其相角对a相电流变换，要保证d轴电流值为负数。
+    如果为正数，则需调换硬件接线，或者更改软件上的处理（那么现在ADC读数减去偏置最后转化的Id为正，说明我们需要改为偏置减去ADC读数）
+    bc相同理。
     */
     float32_t temp = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER0);
     Udc = 0.017101307f*temp - 0.192351315f;
@@ -92,9 +98,9 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
     Ubc_inst = 0.01621422f*(inst_H - inst_L) + 0.03109598f;
     Uca_inst = 0.f - Uab_inst - Ubc_inst;
 
-    Ia_inst = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER1) - 2055.f;
-    Ib_inst = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER2) - 2047.f;
-    Ic_inst = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER3) - 2046.f;
+    Ia_inst = 0.00370255f*(2045.f - (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER2)) - 0.00034074f;
+    Ib_inst = 2047.f - (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER3);
+    Ic_inst = 2046.f - (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER4);
 
     Ua_inst = (2.f * Uab_inst + Ubc_inst) / 3.f;
     Ub_inst = (2.f * Ubc_inst + Uca_inst) / 3.f;
@@ -102,23 +108,28 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
 
     PLL_Calc(Ua_inst);
     Ualpha = Ua_inst;
+    Ialpha = Ia_inst;
     U_data[i] = Ualpha;
+    I_data[i] = Ialpha;
     //获取beta轴
     if (i >= 100)
     {
         Ubeta = U_data[i - 100];
+        Ibeta = I_data[i - 100];
     }
     else
     {
         Ubeta = U_data[i + 300];
+        Ibeta = I_data[i + 300];
     }
     //变换
-    ab_to_dq(Ualpha, Ubeta, theta_ref, &Ud, &Uq);//注意是theta_ref
+    ab_to_dq(Ualpha, Ubeta, theta, &Ud, &Uq);
+    ab_to_dq(Ialpha, Ibeta, theta, &Id, &Iq);
     //注意是theta
     static float32_t filter,last_filter;
-    filter = 0.01f*Ud + 0.99f*last_filter;
+    filter = 0.01f*Id + 0.99f*last_filter;
     last_filter = filter;
-    Ud = filter;
+    Id = filter;
     //进行滤波方便拟合测量，闭环时应去掉。
     if (MODE == 1 )
     {
