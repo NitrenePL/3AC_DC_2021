@@ -32,16 +32,16 @@ void KeyAction(uint16_t key)
 
             break;
         case 9:
-
+            PF_SET += 0.01f;
             break;
         case 10:
-
+            PF_SET -= 0.01f;
             break;
         case 11:
-
+            LC_SET = 1;
             break;
         case 12:
-
+            LC_SET = -1;
             break;
         case 13:
             break;

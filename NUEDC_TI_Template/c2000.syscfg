@@ -38,6 +38,7 @@ const i2c1        = i2c.addInstance();
 const controller  = scripting.addModule("/libraries/control/dcl/controller.js", {}, false);
 const controller1 = controller.addInstance();
 const controller2 = controller.addInstance();
+const controller3 = controller.addInstance();
 const logger      = scripting.addModule("/libraries/control/dcl/logger.js", {}, false);
 const logger1     = logger.addInstance();
 const logger2     = logger.addInstance();
@@ -339,6 +340,13 @@ controller2.Ki               = "0.0015f";
 controller2.Umax             = "20.0f";
 controller2.Umin             = "-20.0f";
 controller2.$name            = "PI_Iq";
+
+controller3.controllerChoice = "PI";
+controller3.Ki               = "0.0015f";
+controller3.$name            = "PI_Udc";
+controller3.Kp               = "2.0f";
+controller3.Umax             = "4.0f";
+controller3.Umin             = "0.0f";
 
 logger1.$name     = "myLOGGER0";
 logger1.linkerEn  = true;

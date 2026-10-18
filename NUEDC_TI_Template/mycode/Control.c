@@ -26,6 +26,8 @@ float32_t I_SET;
 float32_t Udc;
 float32_t Ua_inst,Ub_inst,Uc_inst;
 float32_t Ia_inst,Ib_inst,Ic_inst;
+float32_t PF_SET;
+int       LC_SET;
 #pragma SET_DATA_SECTION()
 
 #pragma SET_DATA_SECTION("logVariables")
@@ -121,19 +123,17 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
     if (MODE == 1 && PLL_Locked == 1)//锁相后开波
     {
         /*
-        三相整流侧控制采用传统的dq解耦控制，将采用电压电流双闭环，先调试电流内环
-        我们调单电流环实现整流，此时建议直流侧加上一个负载，并联一个50V的直流电源。
-        上电顺序为先开启直流电源，随后开启交流输入，再开始整流
-        那么如果设定但电流环的d轴目标值为1.414，q轴为0，则输入功率为48.49WW(题目要求为28V线电压输入)
-        需要保证在整流开始前直流电源输送给负载的功率大于输入功率（例如上面说的是48.49W，如果目标值是2.828，则需要保证负载上的功率大于96.995W）
-        只有这样，在开始整流后，功率才不会向直流电源倒灌。
-
-        上面变换的相角都要是锁相得到的角度
-        在syscfg中建立两个PI控制器
+        在完成了单电流环后，便需要开始双环的调试。
+        在syscfg中建立PI控制器
         Setup中初始化控制器
+        此时是双环，因此直流侧的直流电源需要去掉，并且直流电压环的输出作为d轴电流环的参考。
         */
-        float32_t Usd = Ud + Iq*100*CONST_2PI_32*0.002f - DCL_runPI_C3(&PI_Id, 1.414f, Id);
-        float32_t Usq = Uq - Id*100*CONST_2PI_32*0.002f - DCL_runPI_C3(&PI_Iq, 0.f, Iq);
+        DCL_runClamp_C1(&PF_SET, 1.f, 0.8f);
+        float32_t I_Set = DCL_runPI_C3(&PI_Udc, 50.f, Udc);
+        float32_t Id_Set = I_Set*PF_SET;
+        float32_t Iq_Set = I_Set*sqrtf(1.f-PF_SET*PF_SET)*LC_SET;
+        float32_t Usd = Ud + Iq*100*CONST_2PI_32*0.002f - DCL_runPI_C3(&PI_Id, Id_Set, Id);
+        float32_t Usq = Uq - Id*100*CONST_2PI_32*0.002f - DCL_runPI_C3(&PI_Iq, Iq_Set, Iq);
         float32_t Ua_pu,Ub_pu,Uc_pu;
         dqz_to_abc(&Ua_pu, &Ub_pu, &Uc_pu, theta, Usd, Usq, 0);
         CB_SVPWM_3Ph(Ua_pu/25.f, Ub_pu/25.f, Uc_pu/25.f);//根据SVPWM调制函数要求，需要除以母线的一半
@@ -168,6 +168,7 @@ void Setup(void)
     // 控制器参数计算&初始化
     DCL_resetPI(&PI_Id);
     DCL_resetPI(&PI_Iq);
+    DCL_resetPI(&PI_Udc);
     // 锁相环初始化
     PLL_Init();
 
@@ -178,6 +179,9 @@ void Setup(void)
     Interrupt_enable(INT_ADCA1); // 使能主控中断
 
     OLED_Display_Init();
+
+    PF_SET = 1.0f;
+    LC_SET = 1.0f;
 
 }
 

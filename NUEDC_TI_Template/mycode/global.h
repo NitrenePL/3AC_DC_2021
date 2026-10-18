@@ -41,6 +41,8 @@ extern "C"
     extern float32_t I_SET;
     extern float32_t Udc;
     extern float32_t Ia_inst,Ib_inst,Ic_inst;
+    extern float32_t PF_SET;
+    extern int       LC_SET;
     
     
 #ifdef __cplusplus

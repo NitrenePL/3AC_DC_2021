@@ -88,13 +88,13 @@ static void OLED_Display_UpdatePage0(void)
     OLED_Display_FormatFixed2(oledLine[3], "Ud", Ud);
     OLED_Display_UpdateLine(3U, oledLine[3]);
 
-    OLED_Display_FormatFixed2(oledLine[4], "Uq", Uq);
+    OLED_Display_FormatFixed2(oledLine[4], "Iq", Id);
     OLED_Display_UpdateLine(4U, oledLine[4]);
 
-    OLED_Display_FormatFixed2(oledLine[5], "Id", Id);
+    OLED_Display_FormatFixed2(oledLine[5], "PF_SET", PF_SET);
     OLED_Display_UpdateLine(5U, oledLine[5]);
 
-    OLED_Display_FormatFixed2(oledLine[6], "Iq", Iq);
+    OLED_Display_FormatFixed2(oledLine[6], "LC_SET", LC_SET);
     OLED_Display_UpdateLine(6U, oledLine[6]);
 }
 
