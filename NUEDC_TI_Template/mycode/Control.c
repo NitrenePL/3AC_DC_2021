@@ -99,16 +99,16 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
     Uca_inst = 0.f - Uab_inst - Ubc_inst;
 
     Ia_inst = 0.00370255f*(2045.f - (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER2)) - 0.00034074f;
-    Ib_inst = 2047.f - (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER3);
-    Ic_inst = 2046.f - (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER4);
+    Ib_inst = 0.00371255f*(2047.f - (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER3)) - 0.00283144f;
+    Ic_inst = 0.00369237f*(2046.f - (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER4)) - 0.00163992f;
 
     Ua_inst = (2.f * Uab_inst + Ubc_inst) / 3.f;
     Ub_inst = (2.f * Ubc_inst + Uca_inst) / 3.f;
     Uc_inst = (2.f * Uca_inst + Uab_inst) / 3.f;
 
-    PLL_Calc(Ua_inst);
-    Ualpha = Ua_inst;
-    Ialpha = Ia_inst;
+    PLL_Calc(Uc_inst);
+    Ualpha = Uc_inst;
+    Ialpha = Ic_inst;
     U_data[i] = Ualpha;
     I_data[i] = Ialpha;
     //获取beta轴
