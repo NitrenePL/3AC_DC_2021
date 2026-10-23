@@ -28,6 +28,7 @@ float32_t Ua_inst,Ub_inst,Uc_inst;
 float32_t Ia_inst,Ib_inst,Ic_inst;
 float32_t PF_SET;
 int       LC_SET;
+float32_t Duty,Vo_set;
 #pragma SET_DATA_SECTION()
 
 #pragma SET_DATA_SECTION("logVariables")
@@ -123,10 +124,8 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
     if (MODE == 1 && PLL_Locked == 1)//锁相后开波
     {
         /*
-        在完成了单电流环后，便需要开始双环的调试。
-        在syscfg中建立PI控制器
-        Setup中初始化控制器
-        此时是双环，因此直流侧的直流电源需要去掉，并且直流电压环的输出作为d轴电流环的参考。
+        三相整流输出稳定50V母线，然后需要buck电路实现36V稳压输出
+        先进行开环测试，BUCK一边接负载，使用EPWMD驱动
         */
         DCL_runClamp_C1(&PF_SET, 1.f, 0.8f);
         float32_t I_Set = DCL_runPI_C3(&PI_Udc, 50.f, Udc);
@@ -138,6 +137,9 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
         dqz_to_abc(&Ua_pu, &Ub_pu, &Uc_pu, theta, Usd, Usq, 0);
         CB_SVPWM_3Ph(Ua_pu/25.f, Ub_pu/25.f, Uc_pu/25.f);//根据SVPWM调制函数要求，需要除以母线的一半
         EPWM_Start();
+
+        EPWM_setCounterCompareValue(EPWMD_BASE, EPWM_COUNTER_COMPARE_A, (uint16_t)(Duty * PWM_PRD));
+        EPWM_Start_DEF();
     }
     else if (MODE == 2) 
     {
@@ -182,6 +184,7 @@ void Setup(void)
 
     PF_SET = 1.0f;
     LC_SET = 1.0f;
+    Duty = 0.5f;
 
 }
 
