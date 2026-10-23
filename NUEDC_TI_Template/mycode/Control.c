@@ -77,10 +77,7 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
     float32_t temp = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER0);
     Udc = 0.017101307f*temp - 0.192351315f;
     temp = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER1);
-    static float32_t filter,last_filter;
-    filter = 0.99f*filter + 0.01f*temp;
-    last_filter = filter;
-    Vo = filter;
+    Vo = 0.01650608f*temp + 0.25277211f;
     float32_t Uab_inst,Ubc_inst,Uca_inst;
     float32_t inst_H = (float32_t)ADC_readResult(ADCBRESULT_BASE, ADC_SOC_NUMBER0);
     float32_t inst_L = (float32_t)ADC_readResult(ADCBRESULT_BASE, ADC_SOC_NUMBER1);
@@ -142,7 +139,7 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
         dqz_to_abc(&Ua_pu, &Ub_pu, &Uc_pu, theta, Usd, Usq, 0);
         CB_SVPWM_3Ph(Ua_pu/25.f, Ub_pu/25.f, Uc_pu/25.f);//根据SVPWM调制函数要求，需要除以母线的一半
         EPWM_Start();
-
+        Duty = 0.5f + DCL_runPI_C3(&PI_Uo, Vo_set, Vo);
         EPWM_setCounterCompareValue(EPWMD_BASE, EPWM_COUNTER_COMPARE_A, (uint16_t)(Duty * PWM_PRD));
         EPWM_Start_DEF();
     }
@@ -176,6 +173,7 @@ void Setup(void)
     DCL_resetPI(&PI_Id);
     DCL_resetPI(&PI_Iq);
     DCL_resetPI(&PI_Udc);
+    DCL_resetPI(&PI_Uo);
     // 锁相环初始化
     PLL_Init();
 
@@ -190,6 +188,7 @@ void Setup(void)
     PF_SET = 1.0f;
     LC_SET = 1.0f;
     Duty = 0.5f;
+    Vo_set = 28.f;
 
 }
 
