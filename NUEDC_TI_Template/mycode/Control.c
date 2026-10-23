@@ -28,7 +28,7 @@ float32_t Ua_inst,Ub_inst,Uc_inst;
 float32_t Ia_inst,Ib_inst,Ic_inst;
 float32_t PF_SET;
 int       LC_SET;
-float32_t Duty,Vo_set;
+float32_t Duty,Vo_set,Vo;
 #pragma SET_DATA_SECTION()
 
 #pragma SET_DATA_SECTION("logVariables")
@@ -76,6 +76,11 @@ RAMFUNC __interrupt void ADC_SamplingISR(void)
     static int i;
     float32_t temp = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER0);
     Udc = 0.017101307f*temp - 0.192351315f;
+    temp = (float32_t)ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER1);
+    static float32_t filter,last_filter;
+    filter = 0.99f*filter + 0.01f*temp;
+    last_filter = filter;
+    Vo = filter;
     float32_t Uab_inst,Ubc_inst,Uca_inst;
     float32_t inst_H = (float32_t)ADC_readResult(ADCBRESULT_BASE, ADC_SOC_NUMBER0);
     float32_t inst_L = (float32_t)ADC_readResult(ADCBRESULT_BASE, ADC_SOC_NUMBER1);

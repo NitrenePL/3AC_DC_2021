@@ -110,7 +110,7 @@ static void OLED_Display_UpdatePage1(void)
     OLED_Display_FormatFixed2(oledLine[3], "Ic_inst", Ic_inst);
     OLED_Display_UpdateLine(3U, oledLine[3]);
 
-    OLED_Display_FormatFixed2(oledLine[4], "xx", 0);
+    OLED_Display_FormatFixed2(oledLine[4], "Vo", Vo);
     OLED_Display_UpdateLine(4U, oledLine[4]);
 
     sprintf(oledLine[5], "Open:%-10u", Open);
